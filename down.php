@@ -8,8 +8,21 @@ if(!file_exists("page.html"))
 
 */
 
+include("fpdf17/fpdf.php");
+
+function png2jpg($originalFile, $outputFile, $quality, $type) {
+    
+    if($type != 3) return;
+
+    $image = imagecreatefrompng($originalFile);
+    imagejpeg($image, $outputFile, $quality);
+    imagedestroy($image);
+}
+
 
 set_time_limit(0);
+
+$pdf = new FPDF();
 
 $iterator = new DirectoryIterator("blog-static/");
 
@@ -19,7 +32,7 @@ $iterator = new DirectoryIterator("blog-static/");
 
             	$content = file_get_contents($fileinfo->getPathname());
 			
-		preg_match_all("#src=\"(?P<url>.+).png\"#i", $content, $matches);
+		preg_match_all("#src=\"(?P<url>.+)\.([A-Za-z]{3})\"#i", $content, $matches);
 
 		$nb = count($matches["url"]);
 		$i = 1;
@@ -28,13 +41,52 @@ $iterator = new DirectoryIterator("blog-static/");
 		{
 			$url.= ".png";
 			
-			if(!file_exists("planche/".md5($url).".png")) file_put_contents("planche/".md5($url).".png", file_get_contents($url));
-
+			$filepath = "planche/".md5($url).".jpg";
+			
+			$contentfile = @file_get_contents($url);
+			
+			if($contentfile === false)
+			{
+			      $i++;
+			      
+			      continue;
+			}
+			
+			if(!file_exists($filepath)) file_put_contents($filepath, $contentfile);
+			
+			if(filesize($filepath) == 0)
+			{
+			      unlink($filepath);
+			      
+			      $i++;
+			      
+			      continue;
+			}
+		  			
+			list($w, $h, $type) = getimagesize($filepath);
+			
+			if($type != 3 && $type != 2)
+			{
+			      echo $type;
+			      
+			      unlink($filepath);
+			      
+			      $i++;
+			      
+			      continue;			
+			}
+			
+			png2jpg($filepath, $filepath, 100, $type);
+			
+			$pdf->Image($filepath, null, null, 200, 250);
+			$pdf->AddPage();
+			
 			echo "Terminée à ".(($i/$nb) * 100)."%\r\n";
 
-			$i++;
 		}
         }
     }
+    
+    $pdf->Output("bd.pdf");
 
 ?>
