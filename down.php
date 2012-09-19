@@ -82,6 +82,8 @@ $iterator = new DirectoryIterator("blog-static/");
 			$pdf->AddPage();
 			
 			echo "Terminée à ".(($i/$nb) * 100)."%\r\n";
+			
+			$i++;
 
 		}
         }
