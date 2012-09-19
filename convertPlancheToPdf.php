@@ -18,8 +18,16 @@ $iterator = new DirectoryIterator("planche/");
             
             list($w, $h) = getimagesize($fileinfo->getPathname());
             
+            if($w > LARGEUR_PAGE) {
+                $NouvelleLargeur = LARGEUR_PAGE;
+            }
+            else
+            {
+                $NouvelleLargeur = $w;
+            }
+            
             // Étape 1 :
-            $NouvelleLargeur = LARGEUR_PAGE;
+            
              
             // Étape 2 :
             $Reduction = ( ($NouvelleLargeur * 100)/$w );
@@ -27,7 +35,7 @@ $iterator = new DirectoryIterator("planche/");
             // Étape 3 :
             $NouvelleHauteur = ( ($h * $Reduction)/100 );
             
-            $nombrePage = ceil($nouvelleHauteur/HAUTEUR_PAGE);
+            $nombrePage = ceil($NouvelleHauteur/HAUTEUR_PAGE);
             
             for($p = 1; $p<= $nombrePage; $p++)
             {
@@ -45,14 +53,14 @@ $iterator = new DirectoryIterator("planche/");
                 $file = "tmp/".uniqid().".jpg";
                 
                 $img_source = imagecreatefromjpeg($fileinfo->getPathname());
-                $img_destination = imagecreatetruecolor();
+                $img_destination = imagecreatetruecolor(LARGEUR_PAGE, $ht);
                 
-                imagecopyresampled($img_destination, $img_source, 0, 0, 0, $position_y, LARGEUR_PAGE, $ht, LARGEUR_PAGE, $ht);
+                imagecopyresampled($img_destination, $img_source, 0, 0, 0, $position_y, $NouvelleLargeur, $ht, $w, $ht);
                 
                 imagejpeg($img_destination, $file, 100);
                 
-                $pdf->Image($file, null, null, $NouvelleLargeur, $NouvelleHauteur);
-                $pdf->AddPage();
+                $pdf->Image($file, 10, null, $NouvelleLargeur, $ht);
+                //$pdf->AddPage();
             }
         }
   }
