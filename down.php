@@ -22,8 +22,6 @@ function png2jpg($originalFile, $outputFile, $quality, $type) {
 
 set_time_limit(0);
 
-$pdf = new FPDF();
-
 $iterator = new DirectoryIterator("blog-static/");
 
   foreach ($iterator as $fileinfo) {
@@ -85,10 +83,7 @@ $iterator = new DirectoryIterator("blog-static/");
 			}
 			
 			png2jpg($filepath, $filepath, 100, $type);
-			
-			$pdf->Image($filepath, null, null, 200, 250);
-			$pdf->AddPage();
-			
+				
 			echo "Terminée à ".(($i/$nb) * 100)."%\r\n";
 			
 			$i++;
@@ -97,6 +92,6 @@ $iterator = new DirectoryIterator("blog-static/");
         }
     }
     
-    $pdf->Output("bd.pdf");
+    
 
 ?>
