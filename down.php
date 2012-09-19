@@ -52,7 +52,15 @@ $iterator = new DirectoryIterator("blog-static/");
 			      continue;
 			}
 			
-			if(!file_exists($filepath)) file_put_contents($filepath, $contentfile);
+			if(!file_exists($filepath)) {
+			      file_put_contents($filepath, $contentfile);
+			}
+			else
+			{
+			      $i++;
+			      
+			      continue;
+			}
 			
 			if(filesize($filepath) == 0)
 			{
