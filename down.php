@@ -8,7 +8,6 @@ if(!file_exists("page.html"))
 
 */
 
-include("fpdf17/fpdf.php");
 
 function png2jpg($originalFile, $outputFile, $quality, $type) {
     
