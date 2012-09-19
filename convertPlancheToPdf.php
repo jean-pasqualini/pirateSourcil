@@ -49,17 +49,24 @@ $iterator = new DirectoryIterator("planche/");
                 }
                 
                 $position_y = HAUTEUR_PAGE * ( $p - 1);
+                $position_x = 0;
+                
+                if($NouvelleLargeur < LARGEUR_PAGE)
+                {
+                    $position_x = (LARGEUR_PAGE - $NouvelleLargeur) / 2;
+                }
                 
                 $file = "tmp/".uniqid().".jpg";
                 
                 $img_source = imagecreatefromjpeg($fileinfo->getPathname());
-                $img_destination = imagecreatetruecolor(LARGEUR_PAGE, $ht);
+                $img_destination = imagecreatetruecolor($NouvelleLargeur, $ht);
                 
                 imagecopyresampled($img_destination, $img_source, 0, 0, 0, $position_y, $NouvelleLargeur, $ht, $w, $ht);
                 
                 imagejpeg($img_destination, $file, 100);
                 
-                $pdf->Image($file, 10, null, $NouvelleLargeur, $ht);
+                //$pdf->Image()
+                $pdf->Image($file, 10 + $position_x, null, $NouvelleLargeur, $ht);
                 //$pdf->AddPage();
             }
         }
