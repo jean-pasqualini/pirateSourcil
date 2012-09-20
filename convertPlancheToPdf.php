@@ -5,9 +5,37 @@
 include("fpdf17/fpdf.php");
 
 $pdf = new FPDF();
+$pdf->SetFontSize(25);
+$pdf->SetTextColor(255);
 
 define("LARGEUR_PAGE", 190);
 define("HAUTEUR_PAGE", 250);
+
+function getMiniature($file, $ancienneWith, $ancieneHeight, $with, $height)
+{
+      $img_source = imagecreatefromjpeg($file);
+      $img_destination = imagecreatetruecolor($with, $height);
+                
+      
+                
+      imagecopyresampled($img_destination, $img_source, 0, 0, 0, 0, $with, $height, $ancienneWith, $ancieneHeight);
+      
+      $newfile = "tmp/".uniqid()."_miniature.jpg";
+                
+      imagejpeg($img_destination, $newfile, 100);
+      
+      return $newfile;
+}
+
+function getHeightRatio($w,$h,$NouvelleLargeur)
+{
+            $Reduction = ( ($NouvelleLargeur * 100)/$w );
+             
+            // Étape 3 :
+            $NouvelleHauteur = ceil(( ($h * $Reduction)/100 ));
+            
+            return $NouvelleHauteur;
+}
 
 $iterator = new DirectoryIterator("planche/");
 
@@ -33,7 +61,12 @@ $iterator = new DirectoryIterator("planche/");
             $Reduction = ( ($NouvelleLargeur * 100)/$w );
              
             // Étape 3 :
-            $NouvelleHauteur = ( ($h * $Reduction)/100 );
+            $NouvelleHauteur = ceil(( ($h * $Reduction)/100 ));
+            
+            $fileinfo = new SplFileInfo(getMiniature($fileinfo->getPathname(), $w, $h, $NouvelleLargeur, $NouvelleHauteur)); 
+            
+            $w = $NouvelleLargeur;
+            $h = $NouvelleHauteur;
             
             $nombrePage = ceil($NouvelleHauteur/HAUTEUR_PAGE);
             
@@ -69,6 +102,7 @@ $iterator = new DirectoryIterator("planche/");
                 $pdf->Image($file, 10 + $position_x, null, $NouvelleLargeur, $ht);
                 //$pdf->AddPage();
             }
+            echo "[".$fileinfo->getFilename()."]  ".$w.":".$h." = ".$NouvelleLargeur.":".$NouvelleHauteur."\r\n";
         }
   }
   
