@@ -8,8 +8,9 @@ $pdf = new FPDF();
 $pdf->SetFontSize(25);
 $pdf->SetTextColor(255);
 
-define("LARGEUR_PAGE", 190);
-define("HAUTEUR_PAGE", 250);
+define("QUALITY", 2.5);
+define("LARGEUR_PAGE", 190*QUALITY);
+define("HAUTEUR_PAGE", 250*QUALITY);
 
 function getMiniature($file, $ancienneWith, $ancieneHeight, $with, $height)
 {
@@ -63,6 +64,7 @@ $iterator = new DirectoryIterator("planche/");
             // Étape 3 :
             $NouvelleHauteur = ceil(( ($h * $Reduction)/100 ));
             
+            
             $fileinfo = new SplFileInfo(getMiniature($fileinfo->getPathname(), $w, $h, $NouvelleLargeur, $NouvelleHauteur)); 
             
             $w = $NouvelleLargeur;
@@ -99,7 +101,7 @@ $iterator = new DirectoryIterator("planche/");
                 imagejpeg($img_destination, $file, 100);
                 
                 //$pdf->Image()
-                $pdf->Image($file, 10 + $position_x, null, $NouvelleLargeur, $ht);
+                $pdf->Image($file, 10 + $position_x, null, $NouvelleLargeur/QUALITY, $ht/QUALITY);
                 //$pdf->AddPage();
             }
             echo "[".$fileinfo->getFilename()."]  ".$w.":".$h." = ".$NouvelleLargeur.":".$NouvelleHauteur."\r\n";
